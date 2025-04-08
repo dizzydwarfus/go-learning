@@ -38,6 +38,7 @@ func BfsSimple(root *structs.BiTreeNode) int {
 
 	return depth
 }
+
 func BfsMultiChild(root *structs.MultiChildTreeNode) int {
 	if root == nil {
 		return 0
