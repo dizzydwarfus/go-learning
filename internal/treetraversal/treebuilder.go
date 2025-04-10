@@ -29,6 +29,6 @@ func TreeBuilder(node *structs.MultiChildTreeNode, nodesPerLevel []int, currentC
 
 	for _, child := range node.Children { // for each children call TreeBuilder again
 		TreeBuilder(child, nodesPerLevel, currentCounter, depth+1)
-		shared.Yellow("Resulting Tree: %v\n\n", node)
+		// shared.Yellow("Resulting Tree: %v\n\n", node)
 	}
 }

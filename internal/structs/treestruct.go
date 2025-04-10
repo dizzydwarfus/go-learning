@@ -16,8 +16,8 @@ func (t *BiTreeNode) String() string {
 }
 
 type MultiChildTreeNode struct {
-	Val      int
-	Children []*MultiChildTreeNode
+	Val      int                   `json:"val"`
+	Children []*MultiChildTreeNode `json:"children"`
 }
 
 func (t *MultiChildTreeNode) String() string {
