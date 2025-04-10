@@ -1,55 +1,55 @@
 package testdata
 
-import "treealgos/internal/structs"
+import "treealgos/internal/treetraversal"
 
 var (
-	SimpleTreeRoot = &structs.BiTreeNode{
+	SimpleTreeRoot = &treetraversal.BiTreeNode{
 		Val: 1,
-		Left: &structs.BiTreeNode{
+		Left: &treetraversal.BiTreeNode{
 			Val: 2,
-			Left: &structs.BiTreeNode{
+			Left: &treetraversal.BiTreeNode{
 				Val: 4,
 			},
-			Right: &structs.BiTreeNode{
+			Right: &treetraversal.BiTreeNode{
 				Val: 5,
 			},
 		},
-		Right: &structs.BiTreeNode{
+		Right: &treetraversal.BiTreeNode{
 			Val: 3,
 		},
 	}
-	MultiChildTreeRoot = &structs.MultiChildTreeNode{
+	MultiChildTreeRoot = &treetraversal.MultiChildTreeNode{
 		Val: 1,
-		Children: []*structs.MultiChildTreeNode{
+		Children: []*treetraversal.MultiChildTreeNode{
 			{
 				Val: 2,
-				Children: []*structs.MultiChildTreeNode{
-					&structs.MultiChildTreeNode{Val: 6, Children: []*structs.MultiChildTreeNode{
-						&structs.MultiChildTreeNode{Val: 10, Children: []*structs.MultiChildTreeNode{}},
+				Children: []*treetraversal.MultiChildTreeNode{
+					&treetraversal.MultiChildTreeNode{Val: 6, Children: []*treetraversal.MultiChildTreeNode{
+						&treetraversal.MultiChildTreeNode{Val: 10, Children: []*treetraversal.MultiChildTreeNode{}},
 					}},
 				},
 			},
 			{
 				Val: 3,
-				Children: []*structs.MultiChildTreeNode{
-					&structs.MultiChildTreeNode{Val: 7, Children: []*structs.MultiChildTreeNode{
-						&structs.MultiChildTreeNode{Val: 11, Children: []*structs.MultiChildTreeNode{}},
+				Children: []*treetraversal.MultiChildTreeNode{
+					&treetraversal.MultiChildTreeNode{Val: 7, Children: []*treetraversal.MultiChildTreeNode{
+						&treetraversal.MultiChildTreeNode{Val: 11, Children: []*treetraversal.MultiChildTreeNode{}},
 					}},
 				},
 			},
 			{
 				Val: 4,
-				Children: []*structs.MultiChildTreeNode{
-					&structs.MultiChildTreeNode{Val: 8, Children: []*structs.MultiChildTreeNode{
-						&structs.MultiChildTreeNode{Val: 12, Children: []*structs.MultiChildTreeNode{}},
+				Children: []*treetraversal.MultiChildTreeNode{
+					&treetraversal.MultiChildTreeNode{Val: 8, Children: []*treetraversal.MultiChildTreeNode{
+						&treetraversal.MultiChildTreeNode{Val: 12, Children: []*treetraversal.MultiChildTreeNode{}},
 					}},
 				},
 			},
 			{
 				Val: 5,
-				Children: []*structs.MultiChildTreeNode{
-					&structs.MultiChildTreeNode{Val: 9, Children: []*structs.MultiChildTreeNode{
-						&structs.MultiChildTreeNode{Val: 13, Children: []*structs.MultiChildTreeNode{}},
+				Children: []*treetraversal.MultiChildTreeNode{
+					&treetraversal.MultiChildTreeNode{Val: 9, Children: []*treetraversal.MultiChildTreeNode{
+						&treetraversal.MultiChildTreeNode{Val: 13, Children: []*treetraversal.MultiChildTreeNode{}},
 					}},
 				},
 			},

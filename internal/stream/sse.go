@@ -2,6 +2,7 @@ package stream
 
 import (
 	"fmt"
+	"math/rand/v2"
 	"net/http"
 	"time"
 )
@@ -9,16 +10,14 @@ import (
 func SendEvents(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/event-stream")
 
-	tokens := []string{"Testing", "how", "data", "streaming", "works", "in", "go"}
-
-	for _, token := range tokens {
-		content := fmt.Sprintf("test text: %s\n", string(token))
+	for {
+		content := fmt.Sprintf("Your lucky number: %d\n", rand.IntN(100))
 
 		w.Write([]byte(content))
 		w.(http.Flusher).Flush()
 
 		// intentional sleep
-		time.Sleep(time.Millisecond * 1000)
+		time.Sleep(time.Millisecond * 500)
 	}
 }
 

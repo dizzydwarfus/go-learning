@@ -2,10 +2,9 @@ package treetraversal
 
 import (
 	"treealgos/internal/shared"
-	"treealgos/internal/structs"
 )
 
-func TreeBuilder(node *structs.MultiChildTreeNode, nodesPerLevel []int, currentCounter *int, depth int) {
+func TreeBuilder(node *MultiChildTreeNode, nodesPerLevel []int, currentCounter *int, depth int) {
 	if depth == len(nodesPerLevel)+1 {
 		return
 	}
@@ -23,7 +22,7 @@ func TreeBuilder(node *structs.MultiChildTreeNode, nodesPerLevel []int, currentC
 		shared.Faint("Current Level %v\n", depth)
 		shared.Faint("# of Nodes in this level: %v\n\n", nodesPerLevel[depth-1])
 
-		node.Children = append(node.Children, &structs.MultiChildTreeNode{Val: *currentCounter, Children: []*structs.MultiChildTreeNode{}})
+		node.Children = append(node.Children, &MultiChildTreeNode{Val: *currentCounter, Children: []*MultiChildTreeNode{}})
 		*currentCounter++
 	}
 

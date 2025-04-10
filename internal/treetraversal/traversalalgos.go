@@ -2,15 +2,14 @@ package treetraversal
 
 import (
 	"fmt"
-	"treealgos/internal/structs"
 )
 
-func BfsSimple(root *structs.BiTreeNode) int {
+func BfsSimple(root *BiTreeNode) int {
 	if root == nil {
 		return 0
 	}
 
-	nodeList := []*structs.BiTreeNode{root}
+	nodeList := []*BiTreeNode{root}
 	depth := 0
 
 	for len(nodeList) > 0 {
@@ -39,12 +38,12 @@ func BfsSimple(root *structs.BiTreeNode) int {
 	return depth
 }
 
-func BfsMultiChild(root *structs.MultiChildTreeNode) int {
+func BfsMultiChild(root *MultiChildTreeNode) int {
 	if root == nil {
 		return 0
 	}
 
-	nodeList := []*structs.MultiChildTreeNode{root}
+	nodeList := []*MultiChildTreeNode{root}
 	depth := 0
 
 	for len(nodeList) > 0 {
