@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>WebSocket Demo</title>
+  </head>
+  <body>
+    <h1>WebSocket Client</h1>
+    <div>
+      <input id="msgBox" type="text" placeholder="Write a message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <p id="log"></p>
+
+    <script>
+      const ws = new WebSocket("ws://" + window.location.host + "/ws");
+      const log = document.getElementById("log");
+
+      ws.onopen = function() {
+        logMessage("WebSocket connected!");
+      };
+
+      ws.onmessage = function(event) {
+        logMessage("Server says: " + event.data);
+      };
+
+      ws.onclose = function() {
+        logMessage("WebSocket disconnected.");
+      };
+
+      function sendMessage() {
+        const msgBox = document.getElementById("msgBox");
+        ws.send(msgBox.value);
+        msgBox.value = "";
+      }
+
+      function logMessage(message) {
+        log.innerHTML += "<br/>" + message;
+      }
+    </script>
+  </body>
+</html>
