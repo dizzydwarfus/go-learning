@@ -14,7 +14,7 @@ func main() {
 	}
 	value := 2
 	var counter *int = &value
-	treeInput := []int{2, 3} // number of children per node from second level onwards
+	treeInput := []int{2, 2, 2, 2, 2} // number of children per node from second level onwards
 	treetraversal.TreeBuilder(tree, treeInput, counter, 1)
 
 	jsonBytes, err := json.MarshalIndent(tree, "", "  ")
