@@ -1,15 +1,18 @@
 package treetraversal
 
 import (
-	"fmt"
+	"os"
+
+	"treealgos/graph/tool"
+	"treealgos/types/trees"
 )
 
-func BfsSimple(root *BiTreeNode) int {
+func BfsSimple(root *trees.BiTreeNode) int {
 	if root == nil {
 		return 0
 	}
 
-	nodeList := []*BiTreeNode{root}
+	nodeList := []*trees.BiTreeNode{root}
 	depth := 0
 
 	for len(nodeList) > 0 {
@@ -38,28 +41,30 @@ func BfsSimple(root *BiTreeNode) int {
 	return depth
 }
 
-func BfsMultiChild(root *MultiChildTreeNode) int {
+func BfsMultiChild(root *trees.MultiChildTreeNode, f *os.File) int {
 	if root == nil {
 		return 0
 	}
 
-	nodeList := []*MultiChildTreeNode{root}
+	nodeList := []*trees.MultiChildTreeNode{root}
 	depth := 0
 
 	for len(nodeList) > 0 {
 
 		for _, node := range nodeList {
-			fmt.Println("Before Slicing", nodeList)
+			// fmt.Println("Before Slicing", nodeList)
 			nodeList = nodeList[1:]
-			fmt.Println("After Slicing", nodeList)
+			// fmt.Println("After Slicing", nodeList)
 
-			fmt.Println("Current node value: ", node.Val)
+			// fmt.Println("Current node value: ", node.Val)
 
 			if node.Children != nil {
-				fmt.Println("Appending children nodes: ", node.Children)
+				// fmt.Println("Appending children nodes: ", node.Children)
 				nodeList = append(nodeList, node.Children...)
 			}
-			fmt.Println()
+			// fmt.Println()
+
+			tool.AddNode(f, node)
 		}
 
 		depth++

@@ -1,10 +1,12 @@
 package treetraversal
 
 import (
+	"encoding/json"
 	"treealgos/internal/shared"
+	"treealgos/types/trees"
 )
 
-func TreeBuilder(node *MultiChildTreeNode, nodesPerLevel []int, currentCounter *int, depth int) {
+func TreeBuilder(node *trees.MultiChildTreeNode, nodesPerLevel []int, currentCounter *int, depth int) {
 	if depth == len(nodesPerLevel)+1 {
 		return
 	}
@@ -22,7 +24,7 @@ func TreeBuilder(node *MultiChildTreeNode, nodesPerLevel []int, currentCounter *
 		shared.Faint("Current Level %v\n", depth)
 		shared.Faint("# of Nodes in this level: %v\n\n", nodesPerLevel[depth-1])
 
-		node.Children = append(node.Children, &MultiChildTreeNode{Val: *currentCounter, Children: []*MultiChildTreeNode{}})
+		node.Children = append(node.Children, &trees.MultiChildTreeNode{Val: *currentCounter, Children: []*trees.MultiChildTreeNode{}})
 		*currentCounter++
 	}
 
@@ -30,4 +32,13 @@ func TreeBuilder(node *MultiChildTreeNode, nodesPerLevel []int, currentCounter *
 		TreeBuilder(child, nodesPerLevel, currentCounter, depth+1)
 		// shared.Yellow("Resulting Tree: %v\n\n", node)
 	}
+}
+
+func ShowJSONTree(tree *trees.MultiChildTreeNode) []byte {
+	jsonBytes, err := json.MarshalIndent(tree, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	shared.Green("Resulting Tree:\n--------------------------\n%v\n", string(jsonBytes))
+	return jsonBytes
 }

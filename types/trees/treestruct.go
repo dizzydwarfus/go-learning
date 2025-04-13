@@ -1,4 +1,4 @@
-package treetraversal
+package trees
 
 import "fmt"
 

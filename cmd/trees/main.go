@@ -1,35 +1,26 @@
 package main
 
 import (
-	"encoding/json"
 	"treealgos/graph/tool"
 	"treealgos/internal/shared"
 	"treealgos/internal/treetraversal"
+	"treealgos/types/trees"
 )
 
 func main() {
 	// always start with 1 as root node
-	tree := &treetraversal.MultiChildTreeNode{
+	tree := &trees.MultiChildTreeNode{
 		Val:      1,
-		Children: []*treetraversal.MultiChildTreeNode{},
+		Children: []*trees.MultiChildTreeNode{},
 	}
-	value := 2
+	value := 2 // need to refactor to remove dependency on value variable in TreeBuilder
 	var counter *int = &value
-	treeInput := []int{2, 2} // number of children per node from second level onwards
+	treeInput := []int{2} // number of children per node from second level onwards
 	treetraversal.TreeBuilder(tree, treeInput, counter, 1)
 
-	jsonBytes, err := json.MarshalIndent(tree, "", "  ")
-	if err != nil {
-		panic(err)
-	}
-
-	shared.Green("Resulting Tree:\n--------------------------\n%v\n", string(jsonBytes))
-
-	// depthSimpleTree := treetraversal.BfsSimple(testdata.SimpleTreeRoot)
-	// fmt.Println("Depth for Simple Tree:", depthSimpleTree)
-
-	// depthMultiChildTree := treetraversal.BfsMultiChild(tree)
-	// shared.Green("Depth for Multi-Child Tree:", depthMultiChildTree)
-
-	tool.CreateGraph("testtree", "testtree")
+	f := tool.CreateDotFile("testtree", "testtree")
+	depth := treetraversal.BfsMultiChild(tree, f)
+	shared.Green("Depth: %v\n", depth)
+	tool.CloseDotFile(f)
+	tool.CreateGraph(f)
 }
