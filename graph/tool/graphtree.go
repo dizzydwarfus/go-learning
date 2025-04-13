@@ -25,7 +25,7 @@ func CreateGraph(f *os.File, fType string, overlap bool) {
 	typeArg := fmt.Sprintf("-T%s", fType)
 	overlapArg := fmt.Sprintf("-Goverlap=%v", overlap)
 	createDot := exec.Command("dot", typeArg, overlapArg, "-o", outputFile, f.Name())
-	shared.Faint("%v\n", createDot.String())
+	// shared.Faint("%v\n", createDot.String())
 
 	var stderr bytes.Buffer
 	createDot.Stderr = &stderr
@@ -56,8 +56,10 @@ func AddNode(f *os.File, node *trees.MultiChildTreeNode) {
 }
 
 func CreateDotFile(f, g string) *os.File {
-	f = filepath.Join("graph", "dot", f)
-	fileName := fmt.Sprintf("%v.dot", f)
+	dotFileDir := filepath.Join("graph", "dot")
+	shared.Check(os.MkdirAll(dotFileDir, os.ModePerm))
+
+	fileName := filepath.Join(dotFileDir, fmt.Sprintf("%v.dot", f))
 
 	startGraph := fmt.Appendf([]byte{}, "graph %v {\n", g)
 
@@ -82,3 +84,5 @@ func CloseDotFile(f *os.File) {
 		log.Fatal(shared.Sred("Failed to close: %v\n", err))
 	}
 }
+
+//TODO: separate out tree building from treetraversal algo

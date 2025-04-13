@@ -11,20 +11,20 @@ func TreeBuilder(node *trees.MultiChildTreeNode, nodesPerLevel []int, currentCou
 		return
 	}
 
-	if *currentCounter == node.Val+1 {
-		shared.Magenta("Starting TreeBuilder: %v\n", node)
-	} else {
-		shared.Cyan("Recursively building tree: %v\n", node)
-	}
+	// if *currentCounter == node.Val+1 {
+	// 	shared.Magenta("Starting TreeBuilder: %v\n", node)
+	// } else {
+	// 	shared.Cyan("Recursively building tree: %v\n", node)
+	// }
 
-	shared.Yellow("Appending Children\n")
-	shared.Yellow("--------------------------\n")
+	// shared.Yellow("Appending Children\n")
+	// shared.Yellow("--------------------------\n")
 	for range nodesPerLevel[depth-1] { // append nodesPerLevel as number of children
-		shared.Faint("Current Counter %v\n", *currentCounter)
-		shared.Faint("Current Level %v\n", depth)
-		shared.Faint("# of Nodes in this level: %v\n\n", nodesPerLevel[depth-1])
+		// shared.Faint("Current Counter %v\n", *currentCounter)
+		// shared.Faint("Current Level %v\n", depth)
+		// shared.Faint("# of Nodes in this level: %v\n\n", nodesPerLevel[depth-1])
 
-		node.Children = append(node.Children, &trees.MultiChildTreeNode{Val: *currentCounter, Children: []*trees.MultiChildTreeNode{}})
+		node.Children = append(node.Children, &trees.MultiChildTreeNode{Val: *currentCounter, Children: []*trees.MultiChildTreeNode{}, IsVisited: false})
 		*currentCounter++
 	}
 
