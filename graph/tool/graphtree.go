@@ -12,15 +12,20 @@ import (
 	"treealgos/types/trees"
 )
 
-func CreateGraph(f *os.File) {
+func CreateGraph(f *os.File, fType string, overlap bool) {
 	_, fileName := filepath.Split(f.Name())
 	parsedFileName := strings.Split(fileName, ".")[0]
 
-	shared.Check(os.MkdirAll("graph/svg", os.ModePerm))
-	outputFileName := fmt.Sprintf("graph/svg/%v.svg", parsedFileName)
+	outputDir := filepath.Join("graph", fType)
+	shared.Check(os.MkdirAll(outputDir, os.ModePerm))
 
-	createDot := exec.Command("dot", "-Tsvg", "-o", outputFileName, f.Name())
-	// shared.Faint("%v\n", createDot.String())
+	outputFileName := fmt.Sprintf("%v.%v", parsedFileName, fType)
+	outputFile := filepath.Join(outputDir, outputFileName)
+
+	typeArg := fmt.Sprintf("-T%s", fType)
+	overlapArg := fmt.Sprintf("-Goverlap=%v", overlap)
+	createDot := exec.Command("dot", typeArg, overlapArg, "-o", outputFile, f.Name())
+	shared.Faint("%v\n", createDot.String())
 
 	var stderr bytes.Buffer
 	createDot.Stderr = &stderr

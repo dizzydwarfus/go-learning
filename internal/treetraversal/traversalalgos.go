@@ -72,3 +72,11 @@ func BfsMultiChild(root *trees.MultiChildTreeNode, f *os.File) int {
 
 	return depth
 }
+
+func DfsMultiChild(root *trees.MultiChildTreeNode, f *os.File) int {
+	// condition should be when node == nil
+	// recursively call current func for each child
+	// maybe need isVisited bool?
+
+	return 0
+}
