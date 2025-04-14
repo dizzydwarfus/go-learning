@@ -24,7 +24,20 @@ func TreeBuilder(node *trees.MultiChildTreeNode, nodesPerLevel []int, currentCou
 		// shared.Faint("Current Level %v\n", depth)
 		// shared.Faint("# of Nodes in this level: %v\n\n", nodesPerLevel[depth-1])
 
-		node.Children = append(node.Children, &trees.MultiChildTreeNode{Val: *currentCounter, Children: []*trees.MultiChildTreeNode{}, IsVisited: false})
+		node.Children = append(
+			node.Children,
+			&trees.MultiChildTreeNode{
+				Val:       *currentCounter,
+				Children:  []*trees.MultiChildTreeNode{},
+				IsVisited: false,
+				Metadata: trees.TreeMetadata{
+					Label: "child",
+					// Color: shared.Colors[rand.IntN(len(shared.Colors))],
+					Color: shared.Colors[depth],
+					Depth: depth,
+				},
+			},
+		)
 		*currentCounter++
 	}
 

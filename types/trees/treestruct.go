@@ -19,6 +19,7 @@ type MultiChildTreeNode struct {
 	Val       int                   `json:"val"`
 	Children  []*MultiChildTreeNode `json:"children"`
 	IsVisited bool                  `json:"isVisited"`
+	Metadata  TreeMetadata          `json:"metadata"`
 }
 
 func (t *MultiChildTreeNode) String() string {
@@ -26,4 +27,10 @@ func (t *MultiChildTreeNode) String() string {
 		return "nil"
 	}
 	return fmt.Sprintf("{Val: %d, Children: %v}", t.Val, t.Children)
+}
+
+type TreeMetadata struct {
+	Label string
+	Color string
+	Depth int
 }

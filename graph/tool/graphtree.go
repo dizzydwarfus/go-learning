@@ -42,7 +42,7 @@ func CreateGraph(f *os.File, fType string, overlap bool) {
 // arrow styling: [penwidth = 5 fontsize = 28 fontcolor = "black", label = "test"]
 func AddNode(f *os.File, node *trees.MultiChildTreeNode) {
 	// take value of node as label
-	content := fmt.Appendf([]byte{}, "\"%v\";\n", node.Val)
+	content := fmt.Appendf([]byte{}, "\"%v\" [label=\"%v\\n%v\\nLevel: %v\" color=%v fontcolor=%v];\n", node.Val, node.Val, node.Metadata.Label, node.Metadata.Depth, node.Metadata.Color, node.Metadata.Color)
 
 	// for each children add link to current node
 	for _, child := range node.Children {
@@ -85,4 +85,18 @@ func CloseDotFile(f *os.File) {
 	}
 }
 
-//TODO: separate out tree building from treetraversal algo
+func CreateTreeGraph(root *trees.MultiChildTreeNode, f *os.File) {
+	if root == nil {
+		return
+	}
+	nodeList := []*trees.MultiChildTreeNode{root}
+	for len(nodeList) > 0 {
+		for _, node := range nodeList {
+			nodeList = nodeList[1:]
+			if node.Children != nil {
+				nodeList = append(nodeList, node.Children...)
+			}
+			AddNode(f, node)
+		}
+	}
+}

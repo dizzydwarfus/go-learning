@@ -10,4 +10,6 @@ var (
 	Faint   = color.New(color.Faint).PrintfFunc()
 	Cyan    = color.New(color.FgCyan).PrintfFunc()
 	Yellow  = color.New(color.FgYellow).PrintfFunc()
+
+	Colors = []string{"gold", "firebrick1", "green4", "darksalmon", "aquamarine", "moccasin", "turquoise"}
 )

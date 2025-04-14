@@ -15,21 +15,29 @@ func main() {
 		Val:       1,
 		Children:  []*trees.MultiChildTreeNode{},
 		IsVisited: false,
+		Metadata: trees.TreeMetadata{
+			Label: "root",
+			Color: shared.Colors[0],
+			Depth: 0,
+		},
 	}
 	value := 2 // need to refactor to remove dependency on value variable in TreeBuilder
 	var counter *int = &value
-	treeInput := []int{2, 2, 4} // number of children per node from second level onwards
+	treeInput := []int{2, 2, 2, 2} // number of children per node from second level onwards
 	treetraversal.TreeBuilder(tree, treeInput, counter, 1)
+	treetraversal.ShowJSONTree(tree)
 	shared.Yellow("TreeBuilder BFS took: %v\n", time.Since(start))
 
-	treeGraph := tool.CreateDotFile("testtree", "testtree")
-
 	start = time.Now()
-	bfsDepth := treetraversal.BfsMultiChild(tree, treeGraph)
-	shared.Yellow("BFS took: %v\n", time.Since(start))
-
+	treeGraph := tool.CreateDotFile("testtree", "testtree")
+	tool.CreateTreeGraph(tree, treeGraph)
 	tool.CloseDotFile(treeGraph)
 	tool.CreateGraph(treeGraph, "gif", false)
+	shared.Yellow("Graph creation took: %v\n", time.Since(start))
+
+	start = time.Now()
+	bfsDepth := treetraversal.BfsMultiChild(tree)
+	shared.Yellow("BFS took: %v\n", time.Since(start))
 
 	start = time.Now()
 	dfsDepth := 0

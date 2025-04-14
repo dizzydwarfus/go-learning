@@ -1,9 +1,6 @@
 package treetraversal
 
 import (
-	"os"
-
-	"treealgos/graph/tool"
 	"treealgos/types/trees"
 )
 
@@ -41,7 +38,7 @@ func BfsSimple(root *trees.BiTreeNode) int {
 	return depth
 }
 
-func BfsMultiChild(root *trees.MultiChildTreeNode, f *os.File) int {
+func BfsMultiChild(root *trees.MultiChildTreeNode) int {
 	if root == nil {
 		return 0
 	}
@@ -50,7 +47,6 @@ func BfsMultiChild(root *trees.MultiChildTreeNode, f *os.File) int {
 	depth := 0
 
 	for len(nodeList) > 0 {
-
 		for _, node := range nodeList {
 			// fmt.Println("Before Slicing", nodeList)
 			nodeList = nodeList[1:]
@@ -63,13 +59,9 @@ func BfsMultiChild(root *trees.MultiChildTreeNode, f *os.File) int {
 				nodeList = append(nodeList, node.Children...)
 			}
 			// fmt.Println()
-
-			tool.AddNode(f, node)
 		}
-
 		depth++
 	}
-
 	return depth
 }
 
