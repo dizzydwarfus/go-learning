@@ -27,7 +27,6 @@
             type="number"
             id="level1"
             name="level1"
-            required
             class="mt-1 w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500"
           >
         </div>
@@ -40,7 +39,6 @@
             type="number"
             id="level2"
             name="level2"
-            required
             class="mt-1 w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500"
           >
         </div>
@@ -103,25 +101,27 @@
   </div>
 
   <script>
-    // Create/Replace an EventSource connection after submission
-    const eventSource = new EventSource('/events');
-    eventSource.onmessage = function(event) {
-      const outputDiv = document.getElementById('eventOutput');
-      
-      try {
-        // Parse the event data as JSON
-        const parsed = JSON.parse(event.data);
+    fetch('/init')
+    .then(() => {
+      const eventSource = new EventSource('/events');
+      eventSource.onmessage = function(event) {
+        const outputDiv = document.getElementById('eventOutput');
         
-        // Convert it back to a nicely formatted JSON string
-        outputDiv.textContent = JSON.stringify(parsed, null, 2);
-      } catch (error) {
-        // Fallback if the data isn't valid JSON
-        outputDiv.textContent = "Got SSE: " + event.data;
-      }
-    };
-    eventSource.onerror = function() {
-      console.error('EventSource failed.');
-    };
+        try {
+          // Parse the event data as JSON
+          const parsed = JSON.parse(event.data);
+          
+          // Convert it back to a nicely formatted JSON string
+          outputDiv.textContent = JSON.stringify(parsed, null, 2);
+        } catch (error) {
+          // Fallback if the data isn't valid JSON
+          outputDiv.textContent = "Got SSE: " + event.data;
+        }
+      };
+      eventSource.onerror = function() {
+        console.error('EventSource failed.');
+      };
+    });
 
     // Grab our form and attach an event listener
     const myForm = document.getElementById('myForm');
