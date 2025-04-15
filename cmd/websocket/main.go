@@ -57,7 +57,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Simple file server to serve HTML/JS client (for testing)
-	fs := http.FileServer(http.Dir("./static"))
+	fs := http.FileServer(http.Dir("./static/websocket"))
 	http.Handle("/", fs)
 
 	// Route for WebSocket connections

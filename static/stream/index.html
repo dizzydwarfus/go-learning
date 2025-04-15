@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tailwind Form & EventStream</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col justify-center items-center p-4">
+  <div class="w-full max-w-md bg-white rounded-md shadow-md p-6 space-y-6">
+    <!-- Page Title -->
+    <h1 class="text-2xl font-semibold text-center">Submit Data & Listen for Events</h1>
+
+    <!-- Form -->
+    <form id="myForm" class="space-y-4">
+      <p class="text-sm text-gray-600">
+        Enter up to five integers. If a field is left blank, it will be skipped.
+      </p>
+
+      <!-- Inputs grouped in a grid for better layout -->
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label for="level1" class="block text-sm font-medium text-gray-700">
+            Level 1
+          </label>
+          <input
+            type="number"
+            id="level1"
+            name="level1"
+            required
+            class="mt-1 w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+
+        <div>
+          <label for="level2" class="block text-sm font-medium text-gray-700">
+            Level 2
+          </label>
+          <input
+            type="number"
+            id="level2"
+            name="level2"
+            required
+            class="mt-1 w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+
+        <div>
+          <label for="level3" class="block text-sm font-medium text-gray-700">
+            Level 3
+          </label>
+          <input
+            type="number"
+            id="level3"
+            name="level3"
+            class="mt-1 w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+
+        <div>
+          <label for="level4" class="block text-sm font-medium text-gray-700">
+            Level 4
+          </label>
+          <input
+            type="number"
+            id="level4"
+            name="level4"
+            class="mt-1 w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+
+        <div class="col-span-2">
+          <label for="level5" class="block text-sm font-medium text-gray-700">
+            Level 5
+          </label>
+          <input
+            type="number"
+            id="level5"
+            name="level5"
+            class="mt-1 w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition-colors w-full"
+      >
+        Submit
+      </button>
+    </form>
+  </div>
+
+  <!-- Event Stream Output -->
+  <div class="w-full max-w-md mt-6 bg-white rounded-md shadow-md p-6">
+    <h2 class="text-xl font-semibold mb-2">Event Stream Output</h2>
+    <div
+      id="eventOutput"
+      class="h-40 overflow-auto border border-gray-300 p-2 text-sm rounded bg-gray-50 whitespace-pre-wrap"
+    >
+      <!-- Event data will appear here -->
+    </div>
+  </div>
+
+  <script>
+    // Create/Replace an EventSource connection after submission
+    const eventSource = new EventSource('/events');
+    eventSource.onmessage = function(event) {
+      const outputDiv = document.getElementById('eventOutput');
+      
+      try {
+        // Parse the event data as JSON
+        const parsed = JSON.parse(event.data);
+        
+        // Convert it back to a nicely formatted JSON string
+        outputDiv.textContent = JSON.stringify(parsed, null, 2);
+      } catch (error) {
+        // Fallback if the data isn't valid JSON
+        outputDiv.textContent = "Got SSE: " + event.data;
+      }
+    };
+    eventSource.onerror = function() {
+      console.error('EventSource failed.');
+    };
+
+    // Grab our form and attach an event listener
+    const myForm = document.getElementById('myForm');
+    myForm.addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent the default behavior
+
+      // Gather integer values from the fields
+      const fields = ['level1', 'level2', 'level3', 'level4', 'level5'];
+      const numbers = [];
+
+      fields.forEach(fieldId => {
+        const value = document.getElementById(fieldId).value.trim();
+        if (value !== "") {
+          const parsed = parseInt(value, 10);
+          if (!isNaN(parsed)) {
+            numbers.push(parsed);
+          }
+        }
+      });
+
+      // POST the array of integers to /tree
+      fetch('/tree', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data : numbers })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.text();
+      })
+      .then(result => {
+        console.log('Server response:', result);
+      })
+      .catch(error => {
+        console.error('Error while posting data:', error);
+      });
+    });
+  </script>
+</body>
+</html>
