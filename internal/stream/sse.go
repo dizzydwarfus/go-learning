@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -16,6 +17,24 @@ import (
 
 type Server struct {
 	listenAddr string
+	hub        *SSEHub
+	dataCh     chan TreeParams
+}
+
+func (s *Server) dataProcessor() {
+	log.Println("[Processor] Data processor started...")
+	for params := range s.dataCh {
+		log.Printf("[Processor] Processing data for session %s: %v\n", params.SessionId, params.Data)
+		ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+
+		err := treeInput(ctx, params, s.hub)
+		if err != nil {
+			log.Printf("[Processor] Error processing data for session %s: %v\n", params.SessionId, err)
+		}
+		log.Printf("[Processor] Successfully processed data for session %s\n", params.SessionId)
+		cancel()
+	}
+	log.Println("[Processor] Data processor stopped...")
 }
 
 type SSEHub struct {
@@ -27,6 +46,11 @@ func NewSSEHub() *SSEHub {
 	return &SSEHub{
 		streams: make(map[string]chan trees.MultiChildTreeNode),
 	}
+}
+
+type TreeParams struct {
+	SessionId string `json:"-"`
+	Data      []int  `json:"data"`
 }
 
 func (hub *SSEHub) GetSessionChannel(sessionId string) chan trees.MultiChildTreeNode {
@@ -59,26 +83,32 @@ func (hub *SSEHub) Publish(sessionId string, data trees.MultiChildTreeNode) {
 func NewServer(listenaddr string) *Server {
 	return &Server{
 		listenAddr: listenaddr,
+		hub:        NewSSEHub(),
+		dataCh:     make(chan TreeParams),
 	}
 }
 
 func (s *Server) Start() error {
-	hub := NewSSEHub()
+	go s.dataProcessor()
 	mux := http.NewServeMux()
 
 	fs := http.FileServer(http.Dir("./static/stream"))
-	se := sendEvents(hub)
-	tree := treeInput(hub)
+	se := s.sendEvents()
+	tree := s.handleTreePost()
 
 	mux.Handle("/", fs)
 	mux.HandleFunc("/init", initHandler)
 	mux.Handle("/tree", tree)
 	mux.Handle("/events", se)
 
-	return http.ListenAndServe(s.listenAddr, mux)
+	err := http.ListenAndServe(s.listenAddr, mux)
+	log.Print(shared.Sred("[Server] HTTP server stopped.\n"))
+	log.Print(shared.Sred("[Server] Closing data channel...\n"))
+	close(s.dataCh)
+	return err
 }
 
-func sendEvents(hub *SSEHub) http.Handler {
+func (s *Server) sendEvents() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session")
 		if err != nil {
@@ -104,7 +134,7 @@ func sendEvents(hub *SSEHub) http.Handler {
 		}
 		flusher.Flush()
 
-		ch := hub.GetSessionChannel(sessionId)
+		ch := s.hub.GetSessionChannel(sessionId)
 		// Keep pushing data as it arrives on the channel
 		for {
 			select {
@@ -128,14 +158,14 @@ func sendEvents(hub *SSEHub) http.Handler {
 				// Client disconnected
 				log.Printf(shared.Sred("Client disconnected for session %s"), sessionId)
 				// Optionally close & remove channel if no one else will use it
-				hub.CloseSessionChannel(sessionId)
+				s.hub.CloseSessionChannel(sessionId)
 				return
 			}
 		}
 	})
 }
 
-func treeInput(hub *SSEHub) http.Handler {
+func (s *Server) handleTreePost() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -159,35 +189,26 @@ func treeInput(hub *SSEHub) http.Handler {
 			http.Error(w, "Invalid JSON body", http.StatusBadRequest)
 			return
 		}
+		defer r.Body.Close()
 
 		inputSlice, ok := body["data"]
 		if !ok {
 			http.Error(w, "Missing 'data' field", http.StatusBadRequest)
 			return
 		}
-
 		log.Printf(shared.Sfaint("Received post request: %v\n"), inputSlice)
 
-		// Build an example root node
-		root := &trees.MultiChildTreeNode{
-			Val:       1,
-			Children:  []*trees.MultiChildTreeNode{},
-			IsVisited: false,
-			Metadata: trees.TreeMetadata{
-				Label: "root",
-				Color: shared.Colors[0],
-				Depth: 0,
-			},
+		select {
+		case s.dataCh <- TreeParams{SessionId: sessionId, Data: inputSlice}:
+			log.Printf(shared.Syellow("Data sent to processor for session %s\n"), sessionId)
+
+		default:
+			log.Printf(shared.Sred("Processor is busy, dropping data for session %s\n"), sessionId)
+			http.Error(w, "Processor is busy", http.StatusServiceUnavailable)
+			return
 		}
-
-		// Example usage of your TreeBuilder
-		value := 2
-		counter := &value
-		treetraversal.TreeBuilder(root, inputSlice, counter, 1)
-		hub.Publish(sessionId, *root) // sends to the channel for that session
-
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "OK. Data published to session %s\n", sessionId)
+		w.WriteHeader(http.StatusAccepted)
+		fmt.Fprintf(w, "Accepted. Data sent to worker. SessionId: %s\n", sessionId)
 	})
 }
 
@@ -210,4 +231,24 @@ func initHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 	fmt.Fprintln(w, "OK, cookie set if missing")
+}
+
+func treeInput(ctx context.Context, data TreeParams, hub *SSEHub) error {
+	root := &trees.MultiChildTreeNode{
+		Val:       1,
+		Children:  []*trees.MultiChildTreeNode{},
+		IsVisited: false,
+		Metadata: trees.TreeMetadata{
+			Label: "root",
+			Color: shared.Colors[0],
+			Depth: 0,
+		},
+	}
+
+	value := 2
+	counter := &value
+	treetraversal.TreeBuilder(root, data.Data, counter, 1)
+	hub.Publish(data.SessionId, *root) // sends to the channel for that session
+
+	return nil
 }
