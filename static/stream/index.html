@@ -103,24 +103,7 @@
   <script>
     fetch('/init')
     .then(() => {
-      const eventSource = new EventSource('/events');
-      eventSource.onmessage = function(event) {
-        const outputDiv = document.getElementById('eventOutput');
-        
-        try {
-          // Parse the event data as JSON
-          const parsed = JSON.parse(event.data);
-          
-          // Convert it back to a nicely formatted JSON string
-          outputDiv.textContent = JSON.stringify(parsed, null, 2);
-        } catch (error) {
-          // Fallback if the data isn't valid JSON
-          outputDiv.textContent = "Got SSE: " + event.data;
-        }
-      };
-      eventSource.onerror = function() {
-        console.error('EventSource failed.');
-      };
+      console.log('Initialization complete');
     });
 
     // Grab our form and attach an event listener
@@ -142,6 +125,25 @@
         }
       });
 
+      const eventSource = new EventSource('/events');
+      eventSource.onmessage = function(event) {
+        const outputDiv = document.getElementById('eventOutput');
+        
+        try {
+          // Parse the event data as JSON
+          const parsed = JSON.parse(event.data);
+          
+          // Convert it back to a nicely formatted JSON string
+          outputDiv.textContent = JSON.stringify(parsed, null, 2);
+        } catch (error) {
+          // Fallback if the data isn't valid JSON
+          outputDiv.textContent = "Got SSE: " + event.data;
+        }
+      };
+
+      eventSource.onerror = function() {
+        console.error('EventSource failed.');
+      };
       // POST the array of integers to /tree
       fetch('/tree', {
         method: 'POST',

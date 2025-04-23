@@ -200,10 +200,10 @@ func (s *Server) handleTreePost() http.Handler {
 
 		select {
 		case s.dataCh <- TreeParams{SessionId: sessionId, Data: inputSlice}:
-			log.Printf(shared.Syellow("Data sent to processor for session %s\n"), sessionId)
+			log.Printf(shared.Syellow("Data sent to processor for session %v\n"), sessionId)
 
 		default:
-			log.Printf(shared.Sred("Processor is busy, dropping data for session %s\n"), sessionId)
+			log.Printf(shared.Sred("Processor is busy, dropping data for session %v\n"), sessionId)
 			http.Error(w, "Processor is busy", http.StatusServiceUnavailable)
 			return
 		}
@@ -243,6 +243,10 @@ func treeInput(ctx context.Context, data TreeParams, hub *SSEHub) error {
 			Color: shared.Colors[0],
 			Depth: 0,
 		},
+	}
+	// check ctx err
+	if ctx.Err() != nil {
+		return fmt.Errorf("context error: %w", ctx.Err())
 	}
 
 	value := 2
