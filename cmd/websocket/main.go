@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"golearning/internal/shared"
 	"log"
 	"net/http"
-	"treealgos/internal/shared"
 
 	"github.com/gorilla/websocket"
 )
